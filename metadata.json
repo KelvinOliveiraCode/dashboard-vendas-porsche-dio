@@ -1,0 +1,6 @@
+{
+  "name": "Dashboard de Vendas Porsche",
+  "description": "Painel interativo de monitoramento e análise de vendas de veículos Porsche, com gráficos de receita, quilometragem, métodos de pagamento e filtros dinâmicos.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
