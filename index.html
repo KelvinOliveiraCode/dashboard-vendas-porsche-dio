@@ -1,0 +1,1959 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Porsche Sales Hub | Dashboard</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #070708;
+        --panel: rgba(255, 255, 255, 0.055);
+        --panel-strong: rgba(255, 255, 255, 0.085);
+        --line: rgba(255, 255, 255, 0.11);
+        --line-soft: rgba(255, 255, 255, 0.065);
+        --text: #f4f4f5;
+        --muted: #a1a1aa;
+        --faint: #71717a;
+        --red: #d5001c;
+        --red-soft: rgba(213, 0, 28, 0.16);
+        --gold: #ffcc00;
+        --cyan: #06b6d4;
+        --emerald: #10b981;
+        --indigo: #6366f1;
+        --amber: #f59e0b;
+        --orange: #f97316;
+        --pink: #ec4899;
+        --violet: #8b5cf6;
+        --blue: #3b82f6;
+        --teal: #14b8a6;
+        --radius: 14px;
+        --shadow: 0 18px 52px rgba(0, 0, 0, 0.34);
+        --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --font-display: "Space Grotesk", Inter, ui-sans-serif, system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at 82% 2%, rgba(213, 0, 28, 0.16), transparent 33rem),
+          radial-gradient(circle at 0% 42%, rgba(213, 0, 28, 0.075), transparent 28rem),
+          linear-gradient(135deg, #09090b 0%, #111114 52%, #050506 100%);
+        color: var(--text);
+        font-family: var(--font-sans);
+        letter-spacing: 0;
+      }
+      body.modal-open { overflow: hidden; }
+      ::-webkit-scrollbar { width: 7px; height: 7px; }
+      ::-webkit-scrollbar-track { background: #0f0f12; }
+      ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 999px; }
+      ::-webkit-scrollbar-thumb:hover { background: var(--red); }
+
+      button, input { font: inherit; }
+      button {
+        border: 0;
+        color: inherit;
+        cursor: pointer;
+      }
+      button:disabled { cursor: not-allowed; opacity: 0.45; }
+      .shell {
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        border-bottom: 1px solid var(--line);
+        background: rgba(0, 0, 0, 0.72);
+        backdrop-filter: blur(18px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.36);
+      }
+      .topbar-inner {
+        min-height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-width: 0;
+      }
+      .crest {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        padding: 1px;
+        background: linear-gradient(135deg, #ffcc00, #d5001c 48%, #050506);
+        box-shadow: 0 0 28px rgba(213, 0, 28, 0.12);
+        flex: 0 0 auto;
+      }
+      .crest-core {
+        width: 100%;
+        height: 100%;
+        display: grid;
+        place-items: center;
+        border-radius: 11px;
+        background:
+          linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent),
+          rgba(0, 0, 0, 0.72);
+      }
+      .crest svg { width: 25px; height: 25px; fill: none; stroke: #ffcc00; stroke-width: 1.9; }
+      .brand h1 {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: clamp(1rem, 1.8vw, 1.35rem);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .brand-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 20px;
+        padding: 2px 7px;
+        border-radius: 6px;
+        border: 1px solid rgba(213, 0, 28, 0.28);
+        background: rgba(213, 0, 28, 0.12);
+        color: #ff4b5d;
+        font: 700 0.62rem var(--font-mono);
+        text-transform: uppercase;
+      }
+      .brand p, .muted {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
+      .sync {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.055);
+        color: var(--muted);
+        font: 500 0.73rem var(--font-mono);
+        white-space: nowrap;
+      }
+
+      main {
+        padding-top: 28px;
+        padding-bottom: 64px;
+      }
+      .stack { display: grid; gap: 24px; }
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--panel);
+        backdrop-filter: blur(16px);
+        box-shadow: var(--shadow);
+      }
+      .hero-panel {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        padding: 24px;
+      }
+      .hero-panel h2 {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: clamp(1.2rem, 2.6vw, 1.85rem);
+      }
+      .hero-panel p {
+        max-width: 780px;
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 0.84rem;
+        line-height: 1.55;
+      }
+      .preset-row {
+        display: flex;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 34px;
+        padding: 8px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.055);
+        color: #d4d4d8;
+        font-size: 0.76rem;
+        font-weight: 700;
+        transition: 160ms ease;
+      }
+      .btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+      .btn.active {
+        border-color: rgba(213, 0, 28, 0.58);
+        background: var(--red);
+        color: #fff;
+        box-shadow: 0 0 18px rgba(213, 0, 28, 0.33);
+      }
+      .btn.gold.active { border-color: rgba(255, 204, 0, 0.68); background: var(--gold); color: #09090b; }
+      .btn.cyan.active { border-color: rgba(6, 182, 212, 0.65); background: var(--cyan); color: #031115; }
+      .btn.indigo.active { border-color: rgba(99, 102, 241, 0.65); background: var(--indigo); color: #fff; }
+      .icon { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 14px;
+      }
+      .kpi {
+        position: relative;
+        overflow: hidden;
+        min-height: 148px;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--panel);
+        box-shadow: var(--shadow);
+      }
+      .kpi::after {
+        content: "";
+        position: absolute;
+        right: -38px;
+        top: -38px;
+        width: 112px;
+        height: 112px;
+        border-radius: 50%;
+        background: rgba(213, 0, 28, 0.12);
+        filter: blur(26px);
+      }
+      .kpi:nth-child(3)::after { background: rgba(255, 204, 0, 0.12); }
+      .kpi:nth-child(4)::after { background: rgba(6, 182, 212, 0.12); }
+      .kpi:nth-child(5) { border-left: 4px solid var(--red); }
+      .kpi:nth-child(5)::after { background: rgba(16, 185, 129, 0.12); }
+      .kpi-top {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      .kpi-label {
+        color: var(--muted);
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+      .kpi-icon {
+        display: grid;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        background: rgba(213, 0, 28, 0.12);
+        color: #ff4b5d;
+        border: 1px solid rgba(213, 0, 28, 0.18);
+      }
+      .kpi-value {
+        position: relative;
+        z-index: 1;
+        margin: 0;
+        font: 800 clamp(1.25rem, 2.1vw, 1.78rem) var(--font-display);
+        line-height: 1.06;
+      }
+      .kpi-foot {
+        position: relative;
+        z-index: 1;
+        margin: 8px 0 0;
+        color: var(--faint);
+        font-size: 0.72rem;
+      }
+      .mono { font-family: var(--font-mono); }
+      .red { color: #ff4b5d; }
+      .cyan { color: var(--cyan); }
+      .emerald { color: var(--emerald); }
+      .gold { color: var(--gold); }
+      .indigo { color: #a5b4fc; }
+
+      .insight {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 18px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: linear-gradient(90deg, rgba(213, 0, 28, 0.12), rgba(255, 255, 255, 0.055));
+      }
+      .insight strong {
+        color: #ff4b5d;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .insight span {
+        color: #e4e4e7;
+        font-size: 0.79rem;
+        line-height: 1.55;
+      }
+
+      .filter-panel { padding: 20px; }
+      .panel-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding-bottom: 16px;
+        margin-bottom: 18px;
+        border-bottom: 1px solid var(--line);
+      }
+      .panel-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .panel-title h3 {
+        margin: 0;
+        font: 800 1rem var(--font-display);
+      }
+      .panel-title p {
+        margin: 3px 0 0;
+        color: var(--muted);
+        font-size: 0.76rem;
+      }
+      .panel-mark {
+        display: grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        border: 1px solid rgba(213, 0, 28, 0.22);
+        background: rgba(213, 0, 28, 0.12);
+        color: #ff4b5d;
+      }
+      .filter-grid {
+        display: grid;
+        grid-template-columns: 1.35fr 1fr 1fr 0.9fr;
+        gap: 20px;
+      }
+      .field { display: grid; gap: 8px; }
+      .field + .field { margin-top: 16px; }
+      label {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        color: var(--muted);
+        font-size: 0.76rem;
+        font-weight: 700;
+      }
+      .search-wrap { position: relative; }
+      input[type="search"], input[type="text"] {
+        width: 100%;
+        min-height: 42px;
+        padding: 10px 38px 10px 38px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        outline: 0;
+        background: rgba(255, 255, 255, 0.055);
+        color: #fff;
+      }
+      input:focus {
+        border-color: rgba(213, 0, 28, 0.58);
+        box-shadow: 0 0 0 3px rgba(213, 0, 28, 0.12);
+      }
+      .search-wrap > span .icon {
+        position: absolute;
+        left: 13px;
+        top: 13px;
+        color: var(--faint);
+      }
+      .clear-search {
+        position: absolute;
+        right: 8px;
+        top: 7px;
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: transparent;
+        color: var(--faint);
+      }
+      .range-card {
+        padding: 13px;
+        border: 1px solid var(--line-soft);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.045);
+      }
+      .range-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 8px;
+        color: var(--muted);
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--red);
+        cursor: pointer;
+      }
+      .range-foot {
+        display: flex;
+        justify-content: space-between;
+        color: var(--faint);
+        font: 0.65rem var(--font-mono);
+      }
+      .pill-list, .status-list {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        max-height: 198px;
+        overflow: auto;
+        padding-right: 4px;
+      }
+      .pill-list.wrap {
+        flex-direction: row;
+        flex-wrap: wrap;
+        max-height: none;
+        padding: 0;
+      }
+      .chip {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        min-height: 34px;
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid var(--line-soft);
+        background: rgba(255, 255, 255, 0.045);
+        color: #d4d4d8;
+        font-size: 0.74rem;
+        font-weight: 700;
+        text-align: left;
+      }
+      .chip:hover { background: rgba(255, 255, 255, 0.09); }
+      .chip.selected {
+        border-color: rgba(213, 0, 28, 0.48);
+        background: rgba(213, 0, 28, 0.14);
+        color: #ff6b79;
+      }
+      .chip.year.selected {
+        border-color: rgba(255, 204, 0, 0.5);
+        background: rgba(255, 204, 0, 0.11);
+        color: var(--gold);
+      }
+      .chip.pay {
+        min-height: 29px;
+        border-radius: 999px;
+        font-size: 0.66rem;
+      }
+      .chip.pay.selected {
+        border-color: rgba(99, 102, 241, 0.52);
+        background: rgba(99, 102, 241, 0.15);
+        color: #c4b5fd;
+      }
+      .chip.status {
+        min-height: 31px;
+        font-size: 0.68rem;
+      }
+      .chip.status.selected {
+        border-color: rgba(245, 158, 11, 0.52);
+        background: rgba(245, 158, 11, 0.14);
+        color: #fbbf24;
+      }
+      .year-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 7px;
+      }
+
+      .chart-grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 20px;
+      }
+      .chart-card {
+        padding: 18px;
+        min-height: 350px;
+      }
+      .span-7 { grid-column: span 7; }
+      .span-5 { grid-column: span 5; }
+      .span-8 { grid-column: span 8; }
+      .span-4 { grid-column: span 4; }
+      .span-12 { grid-column: span 12; }
+      .chart-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 54px;
+        padding-bottom: 13px;
+        margin-bottom: 14px;
+        border-bottom: 1px solid var(--line);
+      }
+      .chart-head h3 {
+        margin: 0;
+        font: 800 0.9rem var(--font-display);
+      }
+      .chart-head p {
+        margin: 3px 0 0;
+        color: var(--faint);
+        font-size: 0.73rem;
+      }
+      .chart-box {
+        position: relative;
+        height: 280px;
+      }
+      .chart-box.tall { height: 310px; }
+      canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .chart-empty {
+        height: 100%;
+        display: grid;
+        place-items: center;
+        color: var(--faint);
+        font-size: 0.8rem;
+      }
+      .donut-wrap {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        align-items: center;
+        min-height: 280px;
+      }
+      .donut-center {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        pointer-events: none;
+      }
+      .donut-center div { text-align: center; }
+      .donut-center span {
+        color: var(--faint);
+        font-size: 0.62rem;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+      .donut-center strong {
+        display: block;
+        font: 900 1.65rem var(--font-display);
+      }
+      .legend-list {
+        display: grid;
+        gap: 7px;
+        max-height: 225px;
+        overflow: auto;
+      }
+      .legend-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 8px;
+        border: 1px solid var(--line-soft);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.045);
+        font-size: 0.74rem;
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 99px;
+        flex: 0 0 auto;
+      }
+      .scatter-legend {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 18px;
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 0.72rem;
+      }
+      .tooltip {
+        position: fixed;
+        z-index: 60;
+        display: none;
+        max-width: 260px;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: rgba(0, 0, 0, 0.86);
+        box-shadow: 0 20px 50px rgba(0,0,0,.42);
+        color: #fff;
+        pointer-events: none;
+        font-size: 0.75rem;
+      }
+      .tooltip strong { display: block; margin-bottom: 4px; }
+
+      .table-panel { padding: 20px; }
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.04);
+      }
+      table {
+        width: 100%;
+        min-width: 980px;
+        border-collapse: collapse;
+      }
+      th, td {
+        padding: 13px 14px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+        font-size: 0.76rem;
+        vertical-align: middle;
+      }
+      th {
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.045);
+        font-weight: 900;
+        text-align: left;
+        user-select: none;
+        white-space: nowrap;
+      }
+      th.sortable { cursor: pointer; }
+      th.sortable:hover { background: rgba(255, 255, 255, 0.075); color: #fff; }
+      tbody tr { transition: background 140ms ease; }
+      tbody tr:hover { background: rgba(255, 255, 255, 0.055); }
+      td.price { color: var(--emerald); font-weight: 900; text-align: right; font-family: var(--font-mono); }
+      td.num { text-align: right; font-family: var(--font-mono); }
+      td.center, th.center { text-align: center; }
+      .model-cell {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #fff;
+        font-weight: 900;
+      }
+      .family-tag {
+        padding: 2px 6px;
+        border: 1px solid rgba(213, 0, 28, 0.18);
+        border-radius: 5px;
+        background: rgba(213, 0, 28, 0.11);
+        color: #ff4b5d;
+        font: 900 0.58rem var(--font-mono);
+        text-transform: uppercase;
+      }
+      .state-tag {
+        display: inline-block;
+        margin-left: 5px;
+        padding: 2px 5px;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--faint);
+        font: 800 0.62rem var(--font-mono);
+      }
+      .status-badge, .km-new {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 24px;
+        padding: 4px 9px;
+        border-radius: 999px;
+        border: 1px solid var(--line-soft);
+        font-size: 0.63rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+      .km-new {
+        border-color: rgba(6, 182, 212, 0.22);
+        background: rgba(6, 182, 212, 0.12);
+        color: var(--cyan);
+      }
+      .action-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 9px;
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--muted);
+      }
+      .action-btn:hover {
+        border-color: var(--line);
+        background: rgba(255, 255, 255, 0.075);
+        color: #ff4b5d;
+      }
+      .pagination {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding-top: 16px;
+        margin-top: 16px;
+        border-top: 1px solid var(--line);
+      }
+      .page-buttons {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .page-btn {
+        min-width: 34px;
+        min-height: 34px;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        background: rgba(255, 255, 255, 0.055);
+        color: var(--muted);
+        font: 900 0.76rem var(--font-mono);
+      }
+      .page-btn.active {
+        border-color: var(--red);
+        background: var(--red);
+        color: #fff;
+      }
+
+      .modal {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+        background: rgba(0, 0, 0, 0.86);
+        backdrop-filter: blur(16px);
+      }
+      .modal.open { display: flex; }
+      .sheet {
+        position: relative;
+        display: grid;
+        grid-template-columns: 0.82fr 1.18fr;
+        width: min(980px, 100%);
+        max-height: 90vh;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        background: rgba(9, 9, 11, 0.94);
+        box-shadow: 0 34px 90px rgba(0, 0, 0, 0.55);
+      }
+      .sheet-left {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 28px;
+        min-height: 560px;
+        padding: 30px;
+        border-right: 1px solid var(--line);
+        background:
+          radial-gradient(circle at 80% 0%, rgba(213, 0, 28, 0.14), transparent 18rem),
+          radial-gradient(#d5001c 0.8px, transparent 0.8px) 0 0 / 16px 16px,
+          rgba(255, 255, 255, 0.04);
+      }
+      .sheet-left::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(9, 9, 11, 0.82);
+      }
+      .sheet-left > * { position: relative; z-index: 1; }
+      .sheet-main {
+        padding: 30px;
+        overflow: auto;
+      }
+      .close-modal {
+        position: absolute;
+        right: 16px;
+        top: 16px;
+        z-index: 2;
+        width: 38px;
+        height: 38px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.055);
+        color: var(--muted);
+      }
+      .close-modal:hover { background: rgba(255,255,255,.11); color: #fff; }
+      .sheet h2 {
+        margin: 8px 0 10px;
+        font: 950 clamp(1.65rem, 4vw, 2.4rem) var(--font-display);
+        line-height: 0.98;
+      }
+      .sheet-section { margin-bottom: 28px; }
+      .sheet-section h3 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 14px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--line);
+        color: var(--muted);
+        font: 900 0.75rem var(--font-display);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .spec-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .spec {
+        padding: 13px;
+        border: 1px solid var(--line-soft);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.045);
+      }
+      .spec span {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--faint);
+        font-size: 0.64rem;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+      .spec strong {
+        color: #fff;
+        font: 900 0.78rem var(--font-mono);
+      }
+      .record-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+      .record span {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--faint);
+        font-size: 0.64rem;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+      .record strong {
+        color: #e4e4e7;
+        font-size: 0.78rem;
+      }
+      .sheet-actions {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding-top: 18px;
+        border-top: 1px solid var(--line);
+      }
+      .primary {
+        border-color: rgba(213, 0, 28, 0.75);
+        background: var(--red);
+        color: #fff;
+      }
+      .primary:hover { background: #b90018; }
+      .success-msg {
+        display: none;
+        color: var(--emerald);
+        font-size: 0.78rem;
+        font-weight: 800;
+      }
+      .success-msg.show { display: inline; }
+
+      footer {
+        max-width: 1280px;
+        margin: 52px auto 0;
+        padding: 24px;
+        border-top: 1px solid var(--line);
+        color: #52525b;
+        text-align: center;
+        font-size: 0.76rem;
+      }
+      footer .legal {
+        margin-top: 7px;
+        color: #3f3f46;
+        font: 0.62rem var(--font-mono);
+      }
+
+      @media (max-width: 1160px) {
+        .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .kpi:last-child { grid-column: span 2; }
+        .filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .span-7, .span-5, .span-8, .span-4 { grid-column: span 12; }
+      }
+      @media (max-width: 760px) {
+        .shell { padding: 0 14px; }
+        .topbar-inner, .hero-panel, .panel-head, .pagination {
+          align-items: stretch;
+          flex-direction: column;
+        }
+        .sync { justify-content: center; white-space: normal; }
+        .preset-row { justify-content: flex-start; }
+        .kpi-grid, .filter-grid, .chart-grid, .donut-wrap, .sheet, .record-grid, .spec-grid {
+          grid-template-columns: 1fr;
+        }
+        .kpi:last-child { grid-column: auto; }
+        .span-7, .span-5, .span-8, .span-4, .span-12 { grid-column: auto; }
+        .chart-card, .filter-panel, .table-panel, .hero-panel { padding: 16px; }
+        .chart-box, .chart-box.tall { height: 260px; }
+        .sheet { max-height: 94vh; overflow: auto; }
+        .sheet-left {
+          min-height: auto;
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+        }
+      }
+      @media print {
+        body * { visibility: hidden; }
+        .modal.open, .modal.open * { visibility: visible; }
+        .modal.open { position: static; display: block; background: #fff; color: #000; }
+        .sheet { box-shadow: none; border-color: #ccc; color: #000; }
+        .close-modal, .sheet-actions { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="shell topbar-inner">
+        <div class="brand">
+          <div class="crest" aria-hidden="true">
+            <div class="crest-core">
+              <svg viewBox="0 0 24 24"><path d="m5 16 2-10 5 3 5-3 2 10-7 4-7-4Z"/><path d="M8 14h8M9 10l3 2 3-2"/></svg>
+            </div>
+          </div>
+          <div>
+            <div class="brand-row">
+              <h1>Porsche Sales Hub</h1>
+              <span class="badge">Audited</span>
+            </div>
+            <p>Painel Consolidado de Distribuição e Faturamento Global • Porsche AG</p>
+          </div>
+        </div>
+        <div class="sync">
+          <span data-icon="clock"></span>
+          <span>Última Sincronização: 07/07/2026</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="shell stack">
+      <section class="panel hero-panel">
+        <div>
+          <h2>Performance de Vendas Porsche <span class="muted">| Visão Geral</span></h2>
+          <p>Acompanhe faturamento, logística de distribuição, rotas logísticas e correlações financeiras. Explore modelos de prestígio e emita certificados oficiais de fechamento.</p>
+        </div>
+        <div class="preset-row" id="presetRow">
+          <button class="btn" data-preset="911"><span data-icon="rocket"></span>Série 911</button>
+          <button class="btn cyan" data-preset="zeroKm"><span data-icon="sparkles"></span>Apenas 0 km</button>
+          <button class="btn indigo" data-preset="electric"><span data-icon="zap"></span>E-Performance</button>
+          <button class="btn gold" data-preset="premium"><span data-icon="crown"></span>Modelos Premium</button>
+          <button class="btn" id="clearPreset" hidden><span data-icon="x"></span>Limpar</button>
+        </div>
+      </section>
+
+      <section class="kpi-grid" id="kpiGrid"></section>
+
+      <section class="insight">
+        <span data-icon="sparkles" class="red"></span>
+        <div><strong>Fatores de Análise:</strong> <span id="salesInsight"></span></div>
+      </section>
+
+      <section class="panel filter-panel">
+        <div class="panel-head">
+          <div class="panel-title">
+            <div class="panel-mark"><span data-icon="sliders"></span></div>
+            <div>
+              <h3>Painel de Filtros <span class="muted mono" id="filterCount"></span></h3>
+              <p>Refine a busca por modelos, valores, períodos e localizações</p>
+            </div>
+          </div>
+          <button class="btn" id="resetFilters"><span data-icon="rotate"></span>Limpar Filtros</button>
+        </div>
+        <div class="filter-grid">
+          <div>
+            <div class="field">
+              <label for="searchInput"><span data-icon="search"></span>Busca de Modelos e Cidades</label>
+              <div class="search-wrap">
+                <span data-icon="search"></span>
+                <input id="searchInput" type="search" placeholder="Ex: 911 Turbo, Boston, MA..." />
+                <button class="clear-search" id="clearSearch" aria-label="Limpar busca"><span data-icon="x"></span></button>
+              </div>
+            </div>
+            <div class="field range-card">
+              <div class="range-head"><span><span data-icon="dollar"></span> Preço Máximo</span><span class="emerald mono" id="priceValue"></span></div>
+              <input id="priceRange" type="range" min="0" step="5000" />
+              <div class="range-foot"><span>$0</span><span id="priceMaxLabel"></span></div>
+            </div>
+            <div class="field range-card">
+              <div class="range-head"><span><span data-icon="gauge"></span> Quilometragem Máxima</span><span class="cyan mono" id="mileageValue"></span></div>
+              <input id="mileageRange" type="range" min="0" step="500" />
+              <div class="range-foot"><span>Novo (0 km)</span><span id="mileageMaxLabel"></span></div>
+            </div>
+          </div>
+          <div class="field">
+            <label><span data-icon="car"></span>Gama de Modelos</label>
+            <div class="pill-list" id="familiesList"></div>
+          </div>
+          <div>
+            <div class="field">
+              <label><span data-icon="calendar"></span>Ano do Modelo</label>
+              <div class="year-grid" id="yearsList"></div>
+            </div>
+            <div class="field">
+              <label><span data-icon="card"></span>Forma de Pagamento</label>
+              <div class="pill-list wrap" id="payList"></div>
+            </div>
+          </div>
+          <div class="field">
+            <label><span data-icon="activity"></span>Status de Entrega</label>
+            <div class="status-list" id="statusList"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="chart-grid">
+        <article class="panel chart-card span-7">
+          <div class="chart-head"><span data-icon="bar" class="red"></span><div><h3>Receita por Família de Modelos</h3><p>Divisão do faturamento consolidado por categoria de veículo</p></div></div>
+          <div class="chart-box"><canvas id="familyChart"></canvas></div>
+        </article>
+        <article class="panel chart-card span-5">
+          <div class="chart-head"><span data-icon="activity" class="gold"></span><div><h3>Status das Entregas</h3><p>Distribuição operacional do status logístico dos pedidos</p></div></div>
+          <div class="donut-wrap">
+            <div class="chart-box">
+              <canvas id="statusChart"></canvas>
+              <div class="donut-center"><div><span>Total</span><strong id="donutTotal">0</strong></div></div>
+            </div>
+            <div class="legend-list" id="statusLegend"></div>
+          </div>
+        </article>
+        <article class="panel chart-card span-8">
+          <div class="chart-head"><span data-icon="trend" class="red"></span><div><h3>Evolução e Tendência de Faturamento</h3><p>Histórico de faturamento acumulado por mês, excluindo datas inválidas</p></div></div>
+          <div class="chart-box"><canvas id="trendChart"></canvas></div>
+        </article>
+        <article class="panel chart-card span-4">
+          <div class="chart-head"><span data-icon="card" class="indigo"></span><div><h3>Meios de Pagamento Preferidos</h3><p>Volume de transações por modalidade financeira</p></div></div>
+          <div class="chart-box"><canvas id="paymentChart"></canvas></div>
+        </article>
+        <article class="panel chart-card span-12">
+          <div class="chart-head"><span data-icon="landmark" class="cyan"></span><div><h3>Análise de Desvalorização: Preço vs. Quilometragem</h3><p>Dispersão correlacionando valor de venda com quilometragem rodada</p></div></div>
+          <div class="chart-box tall"><canvas id="scatterChart"></canvas></div>
+          <div class="scatter-legend">
+            <span><i class="dot" style="display:inline-block;background:#d5001c"></i> Novo (0 km)</span>
+            <span><i class="dot" style="display:inline-block;background:#ffcc00"></i> Premium Especial (&gt;$180k)</span>
+            <span><i class="dot" style="display:inline-block;background:#06b6d4"></i> Seminovos padrão</span>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel table-panel">
+        <div class="panel-head">
+          <div>
+            <h3 style="margin:0;font:800 1rem var(--font-display)">Listagem Geral de Transações</h3>
+            <p class="muted" id="tableSubtitle">Resultados da busca</p>
+          </div>
+          <div class="btn mono" id="pageLabel"></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="sortable center" data-sort="saleId">ID</th>
+                <th class="sortable" data-sort="saleDate">Data Venda</th>
+                <th class="sortable" data-sort="model">Modelo Porsche</th>
+                <th class="sortable center" data-sort="modelYear">Ano Mod.</th>
+                <th class="sortable" data-sort="price" style="text-align:right">Preço (USD)</th>
+                <th class="sortable" data-sort="mileage" style="text-align:right">Quilometragem</th>
+                <th class="sortable" data-sort="payMethod">Pagamento</th>
+                <th class="sortable" data-sort="city">Cidade / UF</th>
+                <th class="sortable center" data-sort="deliveryStatus">Status Entrega</th>
+                <th class="center">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="salesRows"></tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <div class="muted" id="paginationSummary"></div>
+          <div class="page-buttons" id="paginationButtons"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div>Este painel foi desenvolvido com base nos dados reais do inventário corporativo e histórico de vendas Porsche.</div>
+      <div class="legal">PORSCHE®, 911®, TAYCAN®, CAYENNE®, MACAN®, PANAMERA® E BOXSTER® SÃO MARCAS REGISTRADAS DA DR. ING. H.C. F. PORSCHE AG.</div>
+    </footer>
+
+    <div class="modal" id="vehicleModal" aria-hidden="true">
+      <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <button class="close-modal" id="closeModal" aria-label="Fechar"><span data-icon="x"></span></button>
+        <aside class="sheet-left" id="modalLeft"></aside>
+        <section class="sheet-main" id="modalMain"></section>
+      </div>
+    </div>
+    <div class="tooltip" id="chartTooltip"></div>
+
+    <script>
+      const rawSales = [
+        [6,'INVALID','718 Cayman',2022,79500,9800,'Credit Card','Boston','MA','Delivered'],
+        [7,'2024-03-14','911 Turbo S',2024,235000,1200,'Wire Transfer','Seattle','WA','Delivered'],
+        [8,'2024-04-18','Cayenne Coupe',2023,112750,6400,'Financing','Austin','TX','In Transit'],
+        [9,'INVALID','Macan S',2021,68900,28,'Cash','Denver','CO','Pending'],
+        [10,'2024-05-22','Taycan 4S',2024,121000,0,'Bank Transfer','Los Angeles','CA','Delivered'],
+        [11,'2024-08-06','Panamera 4',2023,104500,14500,'Credit Card','Miami','FL','Cancelled'],
+        [12,'2024-07-11','911 Carrera S',2020,96300,41000,'Lease','New York','NY','Delivered'],
+        [13,'INVALID','Cayenne E-Hybrid',2022,89750,11744,'Wire Transfer','San Diego','CA','Pending Approval'],
+        [14,'2024-08-19','718 Boxster',2021,73500,22300,'Debit Card','Chicago','IL','Shipped'],
+        [15,'2024-09-02','Macan GTS',2024,95000,3500,'Financing','Phoenix','AZ','In Transit'],
+        [16,'2024-09-17','Taycan Turbo',2023,153200.5,11,'ACH Payment','Dallas','TX','Delivered'],
+        [17,'INVALID','911 GT3',2024,241000,750,'Wire Transfer','Las Vegas','NV','Pending'],
+        [18,'2024-05-11','Panamera Turbo S',2022,132000,19250,'Cash','San Jose','CA','Delivered'],
+        [19,'2024-12-12','Cayenne Turbo GT',2024,188000,2100,'Crypto Payment','Houston','TX','Awaiting Delivery'],
+        [20,'2024-12-25','911 Carrera Cabriolet',2023,127800,12000,'Credit Card','Atlanta','GA','Delivered'],
+        [21,'2025-01-06','Macan',2021,58900,33700,'Bank Transfer','Orlando','FL','Pending'],
+        [22,'INVALID','718 Spyder RS',2024,164000,900,'Financing','Portland','OR','In Transit'],
+        [23,'2025-02-14','Taycan Cross Turismo',2023,118500,7800,'Wire Transfer','Charlotte','NC','Delivered'],
+        [24,'INVALID','Cayenne S',2022,91300,16000,'Credit Card','Nashville','TN','Pending'],
+        [25,'2025-03-21','911 Targa 4S',2024,158750,2500,'Lease','Minneapolis','MN','Delivered'],
+        [26,'2025-03-28','Panamera',2020,72000,49000,'Bank Transfer','Philadelphia','PA','Cancelled'],
+        [27,'2025-04-09','Macan Electric',2025,86500,0,'Wire Transfer','San Antonio','TX','Delivered'],
+        [28,'INVALID','911 Dakar',2024,270000,1050,'Cash','Salt Lake City','UT','Awaiting Pickup'],
+        [29,'2025-05-12','Taycan GTS',2023,139000,6250,'Financing','Raleigh','NC','In Transit'],
+        [30,'2025-06-18','Cayenne',2021,76800,38400,'Credit Card','Detroit','MI','Delivered'],
+        [31,'INVALID','718 Cayman GT4 RS',2024,173600,400,'Wire Transfer','Columbus','OH','Pending'],
+        [32,'2025-07-07','911 Carrera GTS',2022,119900,13600,'Cash','Indianapolis','IN','Delivered'],
+        [33,'2025-07-22','Panamera 4 E-Hybrid',2023,109250,8900,'Lease','Fort Worth','TX','In Transit'],
+        [34,'2025-08-14','Macan T',2022,82000,21750,'Wire Transfer','Jacksonville','FL','Delivered'],
+        [35,'2025-09-01','Taycan Turbo S',2025,214000,0,'Crypto Payment','San Diego','CA','Pending Review'],
+        [36,'INVALID','911 Carrera',2024,124500,4800,'Credit Card','Tampa','FL','Delivered'],
+        [37,'2025-09-18','Cayenne S',2023,98200,12200,'Bank Transfer','Sacramento','CA','Pending'],
+        [38,'2025-10-04','Macan',2022,67500,24100,'Financing','Cleveland','OH','Delivered'],
+        [39,'2025-10-12','Taycan',2025,116900,0,'Wire Transfer','Milwaukee','WI','In Transit'],
+        [40,'2025-10-29','Panamera 4S',2024,112000,10,'Cash','Kansas City','MO','Delivered'],
+        [41,'2025-02-11','718 Boxster',2021,74000,31000,'Debit Card','Omaha','NE','Cancelled'],
+        [42,'2025-11-16','911 Turbo',2024,198300,2400,'Wire Transfer','Albuquerque','NM','Awaiting Delivery'],
+        [43,'INVALID','Cayenne Coupe',2023,103750,6773,'Wire Transfer','Tucson','AZ','Pending Approval'],
+        [44,'INVALID','Macan GTS',2024,93600,5800,'Financing','Fresno','CA','Shipped'],
+        [45,'2025-12-07','Taycan 4S',2025,129000,0,'ACH Payment','Virginia Beach','VA','In Transit'],
+        [46,'2025-12-22','Panamera Turbo',2022,136000,18400,'Credit Card','Colorado Springs','CO','Delivered'],
+        [47,'INVALID','911 GT3 RS',2024,286500,700,'Wire Transfer','Arlington','TX','Pending'],
+        [48,'2026-01-08','Cayenne E-Hybrid',2023,92800,15000,'Lease','Bakersfield','CA','Delivered'],
+        [49,'2026-01-15','Macan T',2022,72400,19750,'Cash','Mesa','AZ','Awaiting Pickup'],
+        [50,'2026-01-28','Taycan Turbo',2025,158500,3200,'Crypto Payment','Atlanta','GA','Delivered'],
+        [51,'2026-02-03','718 Cayman',2021,69900,27600,'Bank Transfer','Long Beach','CA','Pending'],
+        [52,'INVALID','911 Targa 4',2024,141250,2100,'Financing','Oakland','CA','In Transit'],
+        [53,'2026-02-19','Panamera',2020,71500,52000,'Wire Transfer','Tulsa','OK','Delivered'],
+        [54,'2026-02-25','Cayenne Turbo',2023,146800,11300,'Credit Card','Wichita','KS','Pending'],
+        [55,'2026-03-01','Macan Electric',2025,89700,0,'Lease','New Orleans','LA','Delivered'],
+        [56,'2026-03-14','911 Carrera S',2022,104600,15900,'Bank Transfer','Honolulu','HI','Cancelled'],
+        [57,'INVALID','Taycan GTS',2024,142000,6600,'Wire Transfer','Anaheim','CA','Delivered'],
+        [58,'2026-04-08','Cayenne',2021,78400,40250,'Cash','Henderson','NV','Awaiting Review'],
+        [59,'INVALID','718 Spyder RS',2025,169000,850,'Financing','Lexington','KY','In Transit'],
+        [60,'2026-04-21','911 Dakar',2024,268900,1400,'Credit Card','Riverside','CA','Delivered'],
+        [61,'2026-04-29','Panamera 4',2023,101300,12700,'Wire Transfer','Corpus Christi','TX','Pending'],
+        [62,'2026-05-05','Macan S',2021,66750,29800,'Cash','St. Louis','MO','Delivered'],
+        [63,'2026-05-14','Taycan Cross Turismo',2024,127900,7500,'Lease','Pittsburgh','PA','In Transit'],
+        [64,'2026-05-23','Cayenne Turbo GT',2025,200000,1950,'Wire Transfer','Cincinnati','OH','Delivered'],
+        [65,'2026-06-02','911 Carrera Cabriolet',2023,132000,8800,'Crypto Payment','Anchorage','AK','Pending Review'],
+        [66,'2026-06-15','718 Cayman GT4 RS',2024,176400,600,'Credit Card','Plano','TX','Delivered'],
+        [67,'INVALID','Panamera 4 E-Hybrid',2022,108500,16200,'Bank Transfer','Newark','NJ','Cancelled'],
+        [68,'2026-07-07','Macan',2021,59000,36000,'Financing','Greensboro','NC','Awaiting Delivery'],
+        [69,'2026-07-20','Taycan Turbo S',2025,218000,0,'Wire Transfer','Lincoln','NE','Pending'],
+        [70,'INVALID','Cayenne S',2024,99950,5300,'Debit Card','Jersey City','NJ','Delivered'],
+        [71,'2026-04-08','911 Carrera GTS',2024,121750,5872,'Credit Card','Chandler','AZ','Delivered'],
+        [72,'2026-08-18','718 Boxster GTS',2023,91500,13300,'Lease','Reno','NV','Shipped'],
+        [73,'2026-08-31','Panamera Turbo S',2022,134000,20100,'Wire Transfer','Buffalo','NY','In Transit'],
+        [74,'2026-09-09','Macan GTS',2024,96800,0,'ACH Payment','Durham','NC','Delivered'],
+        [75,'2026-09-17','Taycan 4S',2025,131600,2900,'Wire Transfer','Laredo','TX','Pending Approval'],
+        [76,'2026-09-28','Cayenne E-Hybrid',2023,94300,13100,'Cash','Madison','WI','Delivered'],
+        [77,'2026-10-06','911 Turbo S',2025,242000,1100,'Crypto Payment','Lubbock','TX','Awaiting Pickup'],
+        [78,'2026-10-16','718 Cayman S',2022,82750,22500,'Credit Card','Toledo','OH','Cancelled'],
+        [79,'2026-10-29','Macan Electric',2026,91300,0,'Wire Transfer','Irvine','CA','Delivered'],
+        [80,'2026-11-03','Panamera',2021,79900,44800,'Financing','Garland','TX','Pending'],
+        [81,'INVALID','Cayenne Coupe',2024,111000,6700,'Bank Transfer','Irving','TX','In Transit'],
+        [82,'2026-12-11','911 Targa 4S',2023,156500,4200,'Cash','Chesapeake','VA','Delivered'],
+        [83,'2026-12-24','Taycan',2025,119900,1250,'Lease','Scottsdale','AZ','Pending'],
+        [84,'INVALID','Macan T',2022,73200,18600,'Wire Transfer','Norfolk','VA','Delivered'],
+        [85,'2026-12-28','911 GT3',2024,224000,3000,'Wire Transfer','Boise','ID','Awaiting Delivery'],
+        [86,'2027-01-15','911 Carrera',2024,126900,7200,'Credit Card','Orlando','FL','Delivered'],
+        [87,'2027-01-29','Cayenne',2023,84500,21400,'Bank Transfer','San Jose','CA','Pending'],
+        [88,'2027-02-11','Macan S',2022,69800,26300,'Financing','Tampa','FL','Delivered'],
+        [89,'INVALID','Taycan 4S',2025,132700,0,'Wire Transfer','Denver','CO','In Transit'],
+        [90,'2027-03-05','Panamera',2021,81000,42,'Cash','Austin','TX','Delivered'],
+        [91,'2027-03-18','718 Cayman',2023,78900,17500,'Debit Card','Seattle','WA','Cancelled'],
+        [92,'2027-04-02','911 Turbo S',2026,249300,900,'Wire Transfer','Boston','MA','Awaiting Delivery'],
+        [93,'INVALID','Cayenne Coupe',2024,108750,5530,'Wire Transfer','Phoenix','AZ','Pending Approval'],
+        [94,'INVALID','Macan Electric',2026,92600,0,'Financing','Chicago','IL','Shipped'],
+        [95,'2027-05-12','Taycan Turbo',2025,164000,0,'ACH Payment','Dallas','TX','In Transit'],
+        [96,'2027-05-27','Panamera 4S',2024,119000,13400,'Credit Card','San Francisco','CA','Delivered'],
+        [97,'INVALID','911 GT3',2026,232500,1700,'Wire Transfer','Las Vegas','NV','Pending'],
+        [98,'2027-06-18','Cayenne E-Hybrid',2023,96800,14000,'Lease','Charlotte','NC','Delivered'],
+        [99,'2027-07-03','Macan T',2022,74400,20750,'Cash','Mesa','AZ','Awaiting Pickup'],
+        [100,'2027-07-22','Taycan GTS',2025,148500,5200,'Crypto Payment','Atlanta','GA','Delivered'],
+        [101,'2027-08-08','718 Boxster',2021,71900,29600,'Bank Transfer','Long Beach','CA','Pending'],
+        [102,'INVALID','911 Targa 4',2024,143250,3100,'Financing','Oakland','CA','In Transit'],
+        [103,'2027-09-19','Panamera Turbo',2020,137500,48000,'Wire Transfer','Tulsa','OK','Delivered'],
+        [104,'2027-09-25','Cayenne Turbo GT',2025,204800,3300,'Credit Card','Wichita','KS','Pending'],
+        [105,'2027-10-01','911 Dakar',2024,271700,1050,'Lease','New Orleans','LA','Delivered']
+      ];
+
+      const sales = rawSales.map(([saleId, saleDate, model, modelYear, price, mileage, payMethod, city, state, deliveryStatus]) => ({
+        saleId, saleDate, model, modelYear, price, mileage, payMethod, city, state, deliveryStatus, family: getFamily(model)
+      }));
+
+      const state = {
+        search: "",
+        families: new Set(),
+        payMethods: new Set(),
+        statuses: new Set(),
+        years: new Set(),
+        maxPrice: Math.max(...sales.map(s => s.price)),
+        maxMileage: Math.max(...sales.map(s => s.mileage)),
+        priceLimit: Math.max(...sales.map(s => s.price)),
+        mileageLimit: Math.max(...sales.map(s => s.mileage)),
+        activePreset: null,
+        sortField: "saleId",
+        sortOrder: "asc",
+        page: 1,
+        perPage: 12,
+        filtered: sales,
+        hoverPoints: {}
+      };
+
+      const statusColors = {
+        "Delivered": "#10b981", "Shipped": "#06b6d4", "In Transit": "#f97316",
+        "Awaiting Delivery": "#8b5cf6", "Awaiting Pickup": "#ec4899", "Pending": "#eab308",
+        "Pending Approval": "#3b82f6", "Pending Review": "#14b8a6", "Awaiting Review": "#f59e0b",
+        "Cancelled": "#ef4444"
+      };
+      const statusPt = {
+        "Delivered": "Entregue", "Cancelled": "Cancelado", "In Transit": "Em Trânsito", "Shipped": "Enviado",
+        "Awaiting Pickup": "Aguardando Retirada", "Pending Approval": "Pendente Aprov.",
+        "Awaiting Delivery": "Aguardando Entg.", "Pending Review": "Em Revisão",
+        "Awaiting Review": "Aguardando Revisão", "Pending": "Pendente"
+      };
+
+      const $ = (selector) => document.querySelector(selector);
+      const $$ = (selector) => Array.from(document.querySelectorAll(selector));
+      const currency = (value, digits = 0) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "USD", maximumFractionDigits: digits }).format(value);
+      const number = (value, digits = 0) => new Intl.NumberFormat("pt-BR", { maximumFractionDigits: digits }).format(value);
+      const pct = (value) => `${Number.isFinite(value) ? value.toFixed(1) : "0.0"}%`;
+      const dateShort = (date) => date === "INVALID" ? "Sem Data" : new Date(`${date}T00:00:00`).toLocaleDateString("pt-BR");
+      const dateLong = (date) => date === "INVALID" ? "Data não inserida" : new Date(`${date}T00:00:00`).toLocaleDateString("pt-BR", { day: "numeric", month: "long", year: "numeric" });
+
+      function getFamily(model) {
+        const m = model.toLowerCase();
+        if (m.includes("911")) return "911";
+        if (m.includes("718") || m.includes("boxster") || m.includes("cayman") || m.includes("spyder")) return "718 Cayman/Boxster";
+        if (m.includes("cayenne")) return "Cayenne";
+        if (m.includes("macan")) return "Macan";
+        if (m.includes("taycan")) return "Taycan";
+        if (m.includes("panamera")) return "Panamera";
+        return "Outros";
+      }
+
+      function icon(name) {
+        const icons = {
+          clock: '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+          rocket: '<svg class="icon" viewBox="0 0 24 24"><path d="M5 15c-1 1-2 4-2 4s3-1 4-2"/><path d="M9 15 5 11l4-4c4-4 8-4 10-3 1 2 1 6-3 10l-4 4-4-4Z"/><path d="M15 9h.01"/></svg>',
+          sparkles: '<svg class="icon" viewBox="0 0 24 24"><path d="m12 3 1.6 5.4L19 10l-5.4 1.6L12 17l-1.6-5.4L5 10l5.4-1.6L12 3Z"/><path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"/></svg>',
+          zap: '<svg class="icon" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>',
+          crown: '<svg class="icon" viewBox="0 0 24 24"><path d="m5 16 2-10 5 3 5-3 2 10H5Z"/><path d="M5 20h14"/></svg>',
+          x: '<svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>',
+          sliders: '<svg class="icon" viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h3M11 12h9M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>',
+          rotate: '<svg class="icon" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>',
+          search: '<svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
+          dollar: '<svg class="icon" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9a3 3 0 0 0 0 6h6a3 3 0 0 1 0 6H6"/></svg>',
+          gauge: '<svg class="icon" viewBox="0 0 24 24"><path d="M4 14a8 8 0 0 1 16 0"/><path d="m12 14 4-4"/><path d="M6 20h12"/></svg>',
+          car: '<svg class="icon" viewBox="0 0 24 24"><path d="m5 12 2-5h10l2 5"/><path d="M3 12h18v6H3z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>',
+          calendar: '<svg class="icon" viewBox="0 0 24 24"><path d="M7 2v4M17 2v4M3 9h18"/><rect x="3" y="5" width="18" height="16" rx="2"/></svg>',
+          card: '<svg class="icon" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3"/></svg>',
+          activity: '<svg class="icon" viewBox="0 0 24 24"><path d="M22 12h-4l-3 8-6-16-3 8H2"/></svg>',
+          bar: '<svg class="icon" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+          trend: '<svg class="icon" viewBox="0 0 24 24"><path d="m3 17 6-6 4 4 7-8"/><path d="M14 7h6v6"/></svg>',
+          landmark: '<svg class="icon" viewBox="0 0 24 24"><path d="M3 21h18M5 10h14M7 10v8M12 10v8M17 10v8M4 7l8-4 8 4Z"/></svg>',
+          eye: '<svg class="icon" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>',
+          file: '<svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>',
+          cpu: '<svg class="icon" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="1"/><path d="M9 1v4M15 1v4M9 19v4M15 19v4M1 9h4M1 15h4M19 9h4M19 15h4"/></svg>',
+          shield: '<svg class="icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>',
+          print: '<svg class="icon" viewBox="0 0 24 24"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>',
+          download: '<svg class="icon" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>'
+        };
+        return icons[name] || "";
+      }
+
+      function hydrateIcons(root = document) {
+        root.querySelectorAll("[data-icon]").forEach(el => el.innerHTML = icon(el.dataset.icon));
+      }
+
+      function init() {
+        hydrateIcons();
+        setupControls();
+        renderFilterOptions();
+        render();
+        window.addEventListener("resize", debounce(drawCharts, 120));
+      }
+
+      function setupControls() {
+        $("#priceRange").max = state.maxPrice;
+        $("#priceRange").value = state.priceLimit;
+        $("#mileageRange").max = state.maxMileage;
+        $("#mileageRange").value = state.mileageLimit;
+        $("#priceMaxLabel").textContent = `Max: ${currency(state.maxPrice)}`;
+        $("#mileageMaxLabel").textContent = `Max: ${number(state.maxMileage)} km`;
+
+        $("#searchInput").addEventListener("input", (event) => {
+          state.search = event.target.value;
+          state.activePreset = null;
+          state.page = 1;
+          render();
+        });
+        $("#clearSearch").addEventListener("click", () => {
+          state.search = "";
+          $("#searchInput").value = "";
+          state.page = 1;
+          render();
+        });
+        $("#priceRange").addEventListener("input", (event) => {
+          state.priceLimit = Number(event.target.value);
+          state.activePreset = null;
+          state.page = 1;
+          render();
+        });
+        $("#mileageRange").addEventListener("input", (event) => {
+          state.mileageLimit = Number(event.target.value);
+          state.activePreset = null;
+          state.page = 1;
+          render();
+        });
+        $("#resetFilters").addEventListener("click", resetFilters);
+        $("#clearPreset").addEventListener("click", resetFilters);
+        $("#presetRow").addEventListener("click", (event) => {
+          const button = event.target.closest("[data-preset]");
+          if (button) applyPreset(button.dataset.preset);
+        });
+        $$("th.sortable").forEach(th => th.addEventListener("click", () => sortBy(th.dataset.sort)));
+        $("#closeModal").addEventListener("click", closeModal);
+        $("#vehicleModal").addEventListener("click", (event) => {
+          if (event.target.id === "vehicleModal") closeModal();
+        });
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") closeModal();
+        });
+      }
+
+      function unique(field) {
+        return [...new Set(sales.map(s => s[field]))].sort((a, b) => String(a).localeCompare(String(b), "pt-BR", { numeric: true }));
+      }
+
+      function renderFilterOptions() {
+        renderChips("#familiesList", unique("family"), "families");
+        renderChips("#payList", unique("payMethod"), "payMethods", "pay");
+        renderChips("#statusList", unique("deliveryStatus"), "statuses", "status");
+        renderChips("#yearsList", unique("modelYear"), "years", "year");
+      }
+
+      function renderChips(selector, values, setName, kind = "") {
+        const target = $(selector);
+        target.innerHTML = values.map(value => `<button class="chip ${kind}" data-set="${setName}" data-value="${value}"><span>${value}</span><span class="mono mark"></span></button>`).join("");
+        target.addEventListener("click", (event) => {
+          const button = event.target.closest("[data-set]");
+          if (!button) return;
+          const rawValue = button.dataset.value;
+          const value = setName === "years" ? Number(rawValue) : rawValue;
+          const bag = state[setName];
+          bag.has(value) ? bag.delete(value) : bag.add(value);
+          state.activePreset = null;
+          state.page = 1;
+          render();
+        });
+      }
+
+      function applyPreset(preset) {
+        resetFilters(false);
+        state.activePreset = preset;
+        if (preset === "zeroKm") state.mileageLimit = 0;
+        if (preset === "electric") ["Taycan", "Macan", "Cayenne", "Panamera"].forEach(family => state.families.add(family));
+        if (preset === "911") state.families.add("911");
+        if (preset === "premium") state.priceLimit = state.maxPrice;
+        $("#searchInput").value = state.search;
+        $("#priceRange").value = state.priceLimit;
+        $("#mileageRange").value = state.mileageLimit;
+        state.page = 1;
+        render();
+      }
+
+      function resetFilters(shouldRender = true) {
+        state.search = "";
+        state.families.clear();
+        state.payMethods.clear();
+        state.statuses.clear();
+        state.years.clear();
+        state.priceLimit = state.maxPrice;
+        state.mileageLimit = state.maxMileage;
+        state.activePreset = null;
+        state.page = 1;
+        $("#searchInput").value = "";
+        $("#priceRange").value = state.priceLimit;
+        $("#mileageRange").value = state.mileageLimit;
+        if (shouldRender) render();
+      }
+
+      function filterSales() {
+        const query = state.search.trim().toLowerCase();
+        return sales.filter(sale => {
+          if (query) {
+            const found = [sale.model, sale.city, sale.state, String(sale.saleId)].some(value => value.toLowerCase().includes(query));
+            if (!found) return false;
+          }
+          if (state.families.size && !state.families.has(sale.family)) return false;
+          if (state.payMethods.size && !state.payMethods.has(sale.payMethod)) return false;
+          if (state.statuses.size && !state.statuses.has(sale.deliveryStatus)) return false;
+          if (state.years.size && !state.years.has(sale.modelYear)) return false;
+          if (state.activePreset === "premium" && sale.price < 180000) return false;
+          if (state.activePreset === "electric" && !/taycan|electric|hybrid/i.test(sale.model)) return false;
+          if (sale.price > state.priceLimit) return false;
+          if (sale.mileage > state.mileageLimit) return false;
+          return true;
+        });
+      }
+
+      function render() {
+        state.filtered = filterSales();
+        updateControlState();
+        renderKpis();
+        renderInsight();
+        drawCharts();
+        renderTable();
+      }
+
+      function updateControlState() {
+        $("#filterCount").textContent = `(${state.filtered.length} de ${sales.length} veículos)`;
+        $("#priceValue").textContent = currency(state.priceLimit);
+        $("#mileageValue").textContent = `${number(state.mileageLimit)} km`;
+        $("#clearPreset").hidden = !state.activePreset;
+        $$("[data-preset]").forEach(btn => btn.classList.toggle("active", btn.dataset.preset === state.activePreset));
+        $$(".chip").forEach(btn => {
+          const setName = btn.dataset.set;
+          const value = setName === "years" ? Number(btn.dataset.value) : btn.dataset.value;
+          const selected = state[setName].has(value);
+          btn.classList.toggle("selected", selected);
+          const mark = btn.querySelector(".mark");
+          if (mark) mark.textContent = selected ? "✓" : "";
+        });
+      }
+
+      function renderKpis() {
+        const data = state.filtered;
+        const revenue = sum(data, "price");
+        const count = data.length;
+        const avgPrice = count ? revenue / count : 0;
+        const avgMileage = count ? sum(data, "mileage") / count : 0;
+        const newCount = data.filter(s => s.mileage === 0).length;
+        const deliveredCount = data.filter(s => ["Delivered", "Shipped"].includes(s.deliveryStatus)).length;
+        const highest = [...data].sort((a, b) => b.price - a.price)[0];
+        const cards = [
+          ["Faturamento Total", currency(revenue), "Volume de caixa consolidado", "dollar", "red"],
+          ["Veículos Vendidos", `${count} <span class="muted" style="font-size:.8rem">unid.</span>`, `Representa <span class="mono">${pct(count / sales.length * 100)}</span> do estoque histórico`, "car", ""],
+          ["Ticket Médio", currency(avgPrice), highest ? `Modelo Premium: <strong>${highest.model.split(" ")[0]}</strong>` : "Média de valor por unidade", "sparkles", "gold"],
+          ["Km Média / Novos", `${number(avgMileage)} <span class="muted" style="font-size:.8rem">km</span>`, `<span class="cyan mono">${Math.round(count ? newCount / count * 100 : 0)}%</span> saíram zero-quilômetro`, "gauge", "cyan"],
+          ["Entregas Despachadas", pct(count ? deliveredCount / count * 100 : 0), `<span class="emerald mono">${deliveredCount}</span> veículos entregues ou em rota`, "shield", "emerald"]
+        ];
+        $("#kpiGrid").innerHTML = cards.map(([label, value, foot, iconName, color]) => `
+          <article class="kpi">
+            <div class="kpi-top"><span class="kpi-label">${label}</span><span class="kpi-icon ${color}">${icon(iconName)}</span></div>
+            <h3 class="kpi-value">${value}</h3>
+            <p class="kpi-foot">${foot}</p>
+          </article>
+        `).join("");
+      }
+
+      function renderInsight() {
+        const data = state.filtered;
+        if (!data.length) {
+          $("#salesInsight").textContent = "Nenhum veículo encontrado com as especificações selecionadas.";
+          return;
+        }
+        const topCar = [...data].sort((a, b) => b.price - a.price)[0];
+        const topFamily = grouped(data, "family").sort((a, b) => b.value - a.value)[0]?.name || "N/A";
+        $("#salesInsight").textContent = `O modelo de maior valor sob este filtro é o ${topCar.model} (${currency(topCar.price)}). A categoria líder de vendas atual é a linha ${topFamily}.`;
+      }
+
+      function renderTable() {
+        const sorted = [...state.filtered].sort((a, b) => compare(a, b, state.sortField, state.sortOrder));
+        const totalPages = Math.max(1, Math.ceil(sorted.length / state.perPage));
+        if (state.page > totalPages) state.page = totalPages;
+        const start = (state.page - 1) * state.perPage;
+        const pageRows = sorted.slice(start, start + state.perPage);
+        $("#tableSubtitle").textContent = `Resultados da busca (${state.filtered.length} veículos encontrados)`;
+        $("#pageLabel").innerHTML = `Página <strong>${state.page}</strong> de <strong>${totalPages}</strong>`;
+        $("#salesRows").innerHTML = pageRows.length ? pageRows.map(sale => `
+          <tr data-id="${sale.saleId}">
+            <td class="center mono">#${sale.saleId}</td>
+            <td class="mono ${sale.saleDate === "INVALID" ? "muted" : ""}">${dateShort(sale.saleDate)}</td>
+            <td><div class="model-cell"><span class="family-tag">${sale.family.split(" ")[0]}</span>${sale.model}</div></td>
+            <td class="center mono">${sale.modelYear}</td>
+            <td class="price">${currency(sale.price)}</td>
+            <td class="num">${sale.mileage === 0 ? '<span class="km-new">Novo (0 km)</span>' : `${number(sale.mileage)} km`}</td>
+            <td>${sale.payMethod}</td>
+            <td>${sale.city}<span class="state-tag">${sale.state}</span></td>
+            <td class="center">${statusBadge(sale.deliveryStatus)}</td>
+            <td class="center"><button class="action-btn" data-open="${sale.saleId}" title="Ver ficha técnica">${icon("eye")}</button></td>
+          </tr>
+        `).join("") : `<tr><td colspan="10" class="center muted" style="padding:42px">Nenhum veículo corresponde aos filtros selecionados.</td></tr>`;
+
+        $("#salesRows").querySelectorAll("tr[data-id]").forEach(row => row.addEventListener("click", () => openModal(Number(row.dataset.id))));
+        $("#salesRows").querySelectorAll("[data-open]").forEach(button => button.addEventListener("click", (event) => {
+          event.stopPropagation();
+          openModal(Number(button.dataset.open));
+        }));
+        const end = Math.min(start + state.perPage, sorted.length);
+        $("#paginationSummary").innerHTML = sorted.length
+          ? `Mostrando registros de <strong class="mono">${start + 1}</strong> a <strong class="mono">${end}</strong> de <strong class="red mono">${sorted.length}</strong> veículos.`
+          : `Nenhum registro para paginação.`;
+        renderPagination(totalPages);
+        $$("th.sortable").forEach(th => {
+          const marker = th.dataset.sort === state.sortField ? (state.sortOrder === "asc" ? " ↑" : " ↓") : "";
+          th.textContent = th.textContent.replace(/[ ↑↓]+$/g, "") + marker;
+        });
+      }
+
+      function renderPagination(totalPages) {
+        const parts = [`<button class="btn" data-page="${state.page - 1}" ${state.page === 1 ? "disabled" : ""}>Anterior</button>`];
+        for (let i = 1; i <= totalPages; i++) {
+          if (i === 1 || i === totalPages || Math.abs(i - state.page) <= 1) {
+            parts.push(`<button class="page-btn ${i === state.page ? "active" : ""}" data-page="${i}">${i}</button>`);
+          } else if ((i === 2 && state.page > 3) || (i === totalPages - 1 && state.page < totalPages - 2)) {
+            parts.push(`<span class="muted">...</span>`);
+          }
+        }
+        parts.push(`<button class="btn" data-page="${state.page + 1}" ${state.page === totalPages ? "disabled" : ""}>Próximo</button>`);
+        $("#paginationButtons").innerHTML = parts.join("");
+        $("#paginationButtons").querySelectorAll("[data-page]").forEach(btn => btn.addEventListener("click", () => {
+          state.page = Math.max(1, Math.min(totalPages, Number(btn.dataset.page)));
+          renderTable();
+        }));
+      }
+
+      function sortBy(field) {
+        if (state.sortField === field) state.sortOrder = state.sortOrder === "asc" ? "desc" : "asc";
+        else {
+          state.sortField = field;
+          state.sortOrder = "asc";
+        }
+        state.page = 1;
+        renderTable();
+      }
+
+      function compare(a, b, field, order) {
+        let av = a[field], bv = b[field];
+        if (field === "saleDate") {
+          av = av === "INVALID" ? "0000-00-00" : av;
+          bv = bv === "INVALID" ? "0000-00-00" : bv;
+        }
+        const result = typeof av === "string" ? av.localeCompare(bv) : av - bv;
+        return order === "asc" ? result : -result;
+      }
+
+      function statusBadge(status) {
+        const color = statusColors[status] || "#71717a";
+        return `<span class="status-badge" style="border-color:${color}44;background:${color}1f;color:${color}">${statusPt[status] || status}</span>`;
+      }
+
+      function drawCharts() {
+        drawBarChart("familyChart", groupedRevenue(state.filtered, "family"), { color: "#d5001c", value: "receita", label: "Receita", format: currency });
+        drawDonutChart("statusChart", grouped(state.filtered, "deliveryStatus"), statusColors);
+        drawTrendChart("trendChart", trendData(state.filtered));
+        drawBarChart("paymentChart", groupedPayment(state.filtered), { color: "#6366f1", value: "quantidade", label: "Vendas", horizontal: true, format: number });
+        drawScatterChart("scatterChart", state.filtered);
+      }
+
+      function setupCanvas(id) {
+        const canvas = document.getElementById(id);
+        const rect = canvas.parentElement.getBoundingClientRect();
+        const ratio = window.devicePixelRatio || 1;
+        canvas.width = Math.max(1, Math.floor(rect.width * ratio));
+        canvas.height = Math.max(1, Math.floor(rect.height * ratio));
+        const ctx = canvas.getContext("2d");
+        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+        ctx.clearRect(0, 0, rect.width, rect.height);
+        state.hoverPoints[id] = [];
+        return { canvas, ctx, width: rect.width, height: rect.height };
+      }
+
+      function axes(ctx, width, height, pad) {
+        ctx.strokeStyle = "rgba(255,255,255,.08)";
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= 4; i++) {
+          const y = pad.top + (height - pad.top - pad.bottom) * i / 4;
+          ctx.beginPath();
+          ctx.setLineDash([3, 4]);
+          ctx.moveTo(pad.left, y);
+          ctx.lineTo(width - pad.right, y);
+          ctx.stroke();
+        }
+        ctx.setLineDash([]);
+      }
+
+      function drawBarChart(id, data, config) {
+        const { canvas, ctx, width, height } = setupCanvas(id);
+        if (!data.length) return emptyChart(ctx, width, height);
+        const pad = { left: config.horizontal ? 96 : 54, right: 16, top: 12, bottom: 46 };
+        axes(ctx, width, height, pad);
+        const max = Math.max(...data.map(d => d[config.value]), 1);
+        ctx.font = "11px Consolas, monospace";
+        ctx.fillStyle = "#71717a";
+        if (config.horizontal) {
+          const barH = Math.max(12, (height - pad.top - pad.bottom) / data.length - 8);
+          data.forEach((d, i) => {
+            const y = pad.top + i * ((height - pad.top - pad.bottom) / data.length) + 6;
+            const w = (width - pad.left - pad.right) * d[config.value] / max;
+            roundedRect(ctx, pad.left, y, w, barH, 5, config.color);
+            ctx.fillStyle = "#a1a1aa";
+            ctx.textAlign = "right";
+            ctx.fillText(trim(d.name, 13), pad.left - 8, y + barH * .72);
+            state.hoverPoints[id].push({ x: pad.left, y, w, h: barH, html: `<strong>${d.name}</strong>${config.label}: ${config.format(d[config.value])}<br>Valor: ${currency(d.valor || d.receita || 0)}` });
+          });
+        } else {
+          const gap = 12;
+          const barW = Math.max(16, (width - pad.left - pad.right - gap * (data.length - 1)) / data.length);
+          data.forEach((d, i) => {
+            const x = pad.left + i * (barW + gap);
+            const barH = (height - pad.top - pad.bottom) * d[config.value] / max;
+            const y = height - pad.bottom - barH;
+            const gradient = ctx.createLinearGradient(0, y, 0, height - pad.bottom);
+            gradient.addColorStop(0, "#ef4444");
+            gradient.addColorStop(1, "#7f1d1d");
+            roundedRect(ctx, x, y, barW, barH, 6, gradient);
+            ctx.fillStyle = "#71717a";
+            ctx.textAlign = "center";
+            ctx.fillText(trim(d.name, 10), x + barW / 2, height - 18);
+            state.hoverPoints[id].push({ x, y, w: barW, h: barH, html: `<strong>${d.name}</strong>Faturamento: ${currency(d.receita)}<br>Veículos: ${d.quantidade}` });
+          });
+        }
+        bindCanvasTooltip(canvas, id);
+      }
+
+      function drawTrendChart(id, data) {
+        const { canvas, ctx, width, height } = setupCanvas(id);
+        if (!data.length) return emptyChart(ctx, width, height);
+        const pad = { left: 54, right: 18, top: 14, bottom: 44 };
+        axes(ctx, width, height, pad);
+        const max = Math.max(...data.map(d => d.receita), 1);
+        const x = i => pad.left + (width - pad.left - pad.right) * (data.length === 1 ? .5 : i / (data.length - 1));
+        const y = v => height - pad.bottom - (height - pad.top - pad.bottom) * v / max;
+        ctx.beginPath();
+        data.forEach((d, i) => i ? ctx.lineTo(x(i), y(d.receita)) : ctx.moveTo(x(i), y(d.receita)));
+        ctx.lineTo(x(data.length - 1), height - pad.bottom);
+        ctx.lineTo(x(0), height - pad.bottom);
+        ctx.closePath();
+        const fill = ctx.createLinearGradient(0, pad.top, 0, height - pad.bottom);
+        fill.addColorStop(0, "rgba(213,0,28,.36)");
+        fill.addColorStop(1, "rgba(213,0,28,0)");
+        ctx.fillStyle = fill;
+        ctx.fill();
+        ctx.beginPath();
+        data.forEach((d, i) => i ? ctx.lineTo(x(i), y(d.receita)) : ctx.moveTo(x(i), y(d.receita)));
+        ctx.strokeStyle = "#ef4444";
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+        ctx.fillStyle = "#71717a";
+        ctx.font = "11px Consolas, monospace";
+        ctx.textAlign = "center";
+        const step = Math.max(1, Math.ceil(data.length / 8));
+        data.forEach((d, i) => {
+          const px = x(i), py = y(d.receita);
+          ctx.fillStyle = "#ef4444";
+          ctx.beginPath(); ctx.arc(px, py, 3, 0, Math.PI * 2); ctx.fill();
+          if (i % step === 0 || i === data.length - 1) {
+            ctx.fillStyle = "#71717a";
+            ctx.fillText(d.label, px, height - 18);
+          }
+          state.hoverPoints[id].push({ x: px - 8, y: py - 8, w: 16, h: 16, html: `<strong>Período: ${d.label}</strong>Receita: ${currency(d.receita)}<br>Volume: ${d.volume} vendas` });
+        });
+        bindCanvasTooltip(canvas, id);
+      }
+
+      function drawDonutChart(id, data, colors) {
+        const { canvas, ctx, width, height } = setupCanvas(id);
+        $("#donutTotal").textContent = state.filtered.length;
+        $("#statusLegend").innerHTML = data.length ? data.map(item => {
+          const color = colors[item.name] || "#71717a";
+          const share = state.filtered.length ? item.value / state.filtered.length * 100 : 0;
+          return `<div class="legend-item"><span style="display:flex;align-items:center;gap:8px;min-width:0"><i class="dot" style="background:${color}"></i><span>${item.name}</span></span><span class="mono"><strong>${item.value}</strong> (${Math.round(share)}%)</span></div>`;
+        }).join("") : `<div class="chart-empty">Nenhum veículo</div>`;
+        if (!data.length) return emptyChart(ctx, width, height, "Nenhum veículo");
+        const total = data.reduce((acc, d) => acc + d.value, 0);
+        let angle = -Math.PI / 2;
+        const cx = width / 2, cy = height / 2, radius = Math.min(width, height) * .34;
+        data.forEach(item => {
+          const slice = item.value / total * Math.PI * 2;
+          ctx.beginPath();
+          ctx.arc(cx, cy, radius, angle, angle + slice);
+          ctx.lineWidth = Math.max(18, radius * .32);
+          ctx.strokeStyle = colors[item.name] || "#71717a";
+          ctx.stroke();
+          angle += slice + 0.028;
+        });
+      }
+
+      function drawScatterChart(id, data) {
+        const { canvas, ctx, width, height } = setupCanvas(id);
+        if (!data.length) return emptyChart(ctx, width, height);
+        const pad = { left: 60, right: 24, top: 18, bottom: 44 };
+        axes(ctx, width, height, pad);
+        const maxKm = Math.max(...data.map(d => d.mileage), 1);
+        const maxPrice = Math.max(...data.map(d => d.price), 1);
+        const x = km => pad.left + (width - pad.left - pad.right) * km / maxKm;
+        const y = price => height - pad.bottom - (height - pad.top - pad.bottom) * price / maxPrice;
+        ctx.font = "11px Consolas, monospace";
+        ctx.fillStyle = "#71717a";
+        ctx.textAlign = "center";
+        ctx.fillText("Quilometragem", width / 2, height - 13);
+        ctx.save();
+        ctx.translate(14, height / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText("Preço", 0, 0);
+        ctx.restore();
+        data.forEach(sale => {
+          const color = sale.mileage === 0 ? "#d5001c" : sale.price > 180000 ? "#ffcc00" : "#06b6d4";
+          const px = x(sale.mileage), py = y(sale.price);
+          ctx.fillStyle = color;
+          ctx.globalAlpha = .88;
+          ctx.beginPath();
+          ctx.arc(px, py, sale.price > 180000 ? 5 : 4, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = 1;
+          state.hoverPoints[id].push({ x: px - 7, y: py - 7, w: 14, h: 14, html: `<strong>${sale.model} (${sale.modelYear})</strong>Preço: ${currency(sale.price)}<br>Uso: ${number(sale.mileage)} km<br>ID da Venda: #${sale.saleId}` });
+        });
+        bindCanvasTooltip(canvas, id);
+      }
+
+      function bindCanvasTooltip(canvas, id) {
+        canvas.onmousemove = (event) => {
+          const rect = canvas.getBoundingClientRect();
+          const x = event.clientX - rect.left;
+          const y = event.clientY - rect.top;
+          const point = state.hoverPoints[id].find(p => x >= p.x && x <= p.x + p.w && y >= p.y && y <= p.y + p.h);
+          const tip = $("#chartTooltip");
+          if (!point) {
+            tip.style.display = "none";
+            return;
+          }
+          tip.innerHTML = point.html;
+          tip.style.display = "block";
+          tip.style.left = `${event.clientX + 14}px`;
+          tip.style.top = `${event.clientY + 14}px`;
+        };
+        canvas.onmouseleave = () => $("#chartTooltip").style.display = "none";
+      }
+
+      function emptyChart(ctx, width, height, message = "Sem dados com os filtros selecionados.") {
+        ctx.fillStyle = "#71717a";
+        ctx.font = "13px Inter, sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(message, width / 2, height / 2);
+      }
+
+      function roundedRect(ctx, x, y, w, h, r, fill) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+        ctx.fillStyle = fill;
+        ctx.fill();
+      }
+
+      function grouped(data, field) {
+        const map = new Map();
+        data.forEach(item => map.set(item[field], (map.get(item[field]) || 0) + 1));
+        return [...map.entries()].map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+      }
+
+      function groupedRevenue(data, field) {
+        const map = new Map();
+        data.forEach(item => {
+          const current = map.get(item[field]) || { name: item[field], receita: 0, quantidade: 0 };
+          current.receita += item.price;
+          current.quantidade += 1;
+          map.set(item[field], current);
+        });
+        return [...map.values()].sort((a, b) => b.receita - a.receita);
+      }
+
+      function groupedPayment(data) {
+        const map = new Map();
+        data.forEach(item => {
+          const current = map.get(item.payMethod) || { name: item.payMethod, valor: 0, quantidade: 0 };
+          current.valor += item.price;
+          current.quantidade += 1;
+          map.set(item.payMethod, current);
+        });
+        return [...map.values()].sort((a, b) => b.quantidade - a.quantidade);
+      }
+
+      function trendData(data) {
+        const months = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+        const map = new Map();
+        data.filter(s => s.saleDate !== "INVALID").forEach(sale => {
+          const key = sale.saleDate.slice(0, 7);
+          const current = map.get(key) || { key, receita: 0, volume: 0 };
+          current.receita += sale.price;
+          current.volume += 1;
+          map.set(key, current);
+        });
+        return [...map.values()].sort((a, b) => a.key.localeCompare(b.key)).map(item => {
+          const [year, month] = item.key.split("-");
+          return { ...item, label: `${months[Number(month) - 1]}/${year.slice(2)}` };
+        });
+      }
+
+      function sum(data, field) {
+        return data.reduce((acc, item) => acc + item[field], 0);
+      }
+
+      function trim(value, max) {
+        return value.length > max ? `${value.slice(0, max - 1)}…` : value;
+      }
+
+      function debounce(fn, delay) {
+        let timer;
+        return (...args) => {
+          clearTimeout(timer);
+          timer = setTimeout(() => fn(...args), delay);
+        };
+      }
+
+      function getSpecs(modelName) {
+        const m = modelName.toLowerCase();
+        if (m.includes("gt3 rs")) return { engine: "4.0L Aspirado Boxer 6", power: "525 cv", acceleration: "3.2s", type: "Combustão", drivetrain: "Traseira (RWD)" };
+        if (m.includes("gt3")) return { engine: "4.0L Aspirado Boxer 6", power: "510 cv", acceleration: "3.4s", type: "Combustão", drivetrain: "Traseira (RWD)" };
+        if (m.includes("turbo s")) return m.includes("taycan") ? { engine: "Dois Motores Elétricos síncronos", power: "761 cv", acceleration: "2.8s", type: "Elétrico", drivetrain: "Integral (AWD)" } : { engine: "3.8L Biturbo Boxer 6", power: "650 cv", acceleration: "2.7s", type: "Combustão", drivetrain: "Integral (AWD)" };
+        if (m.includes("turbo gt")) return { engine: "4.0L Biturbo V8", power: "640 cv", acceleration: "3.3s", type: "Combustão", drivetrain: "Integral (AWD)" };
+        if (m.includes("turbo")) return m.includes("taycan") ? { engine: "Dois Motores Elétricos", power: "680 cv", acceleration: "3.2s", type: "Elétrico", drivetrain: "Integral (AWD)" } : { engine: "3.8L Biturbo Boxer 6", power: "580 cv", acceleration: "2.8s", type: "Combustão", drivetrain: "Integral (AWD)" };
+        if (m.includes("gt4 rs")) return { engine: "4.0L Aspirado Boxer 6", power: "500 cv", acceleration: "3.4s", type: "Combustão", drivetrain: "Traseira (RWD)" };
+        if (m.includes("gts")) {
+          if (m.includes("911")) return { engine: "3.0L Biturbo Boxer 6", power: "480 cv", acceleration: "3.3s", type: "Combustão", drivetrain: "Traseira (RWD)" };
+          if (m.includes("taycan")) return { engine: "Dois Motores Elétricos", power: "598 cv", acceleration: "3.7s", type: "Elétrico", drivetrain: "Integral (AWD)" };
+          if (m.includes("macan")) return { engine: "2.9L Biturbo V6", power: "440 cv", acceleration: "4.3s", type: "Combustão", drivetrain: "Integral (AWD)" };
+          return { engine: "4.0L Aspirado Boxer 6", power: "400 cv", acceleration: "4.0s", type: "Combustão", drivetrain: "Traseira (RWD)" };
+        }
+        if (m.includes("spyder rs")) return { engine: "4.0L Aspirado Boxer 6", power: "500 cv", acceleration: "3.4s", type: "Combustão", drivetrain: "Traseira (RWD)" };
+        if (m.includes("e-hybrid") || m.includes("hybrid")) return { engine: "3.0L V6 Turbo + Motor Elétrico", power: "470 cv", acceleration: "4.9s", type: "Híbrido Plug-in", drivetrain: "Integral (AWD)" };
+        if (m.includes("electric")) return { engine: "Dois Motores Elétricos (E-Performance)", power: "408 cv", acceleration: "5.2s", type: "Elétrico", drivetrain: "Integral (AWD)" };
+        if (m.includes("carrera s") || m.includes("targa 4s")) return { engine: "3.0L Biturbo Boxer 6", power: "450 cv", acceleration: "3.7s", type: "Combustão", drivetrain: "Integral (AWD)" };
+        if (m.includes("carrera") || m.includes("targa")) return { engine: "3.0L Biturbo Boxer 6", power: "385 cv", acceleration: "4.0s", type: "Combustão", drivetrain: "Traseira (RWD)" };
+        if (m.includes("dakar")) return { engine: "3.0L Biturbo Boxer 6", power: "480 cv", acceleration: "3.4s", type: "Combustão", drivetrain: "Integral (AWD)" };
+        if (m.includes("cayman s") || m.includes("boxster s")) return { engine: "2.5L Turbo Boxer 4", power: "350 cv", acceleration: "4.6s", type: "Combustão", drivetrain: "Traseira (RWD)" };
+        if (m.includes("cayman") || m.includes("boxster")) return { engine: "2.0L Turbo Boxer 4", power: "300 cv", acceleration: "4.9s", type: "Combustão", drivetrain: "Traseira (RWD)" };
+        if (m.includes("macan s")) return { engine: "2.9L Biturbo V6", power: "380 cv", acceleration: "4.8s", type: "Combustão", drivetrain: "Integral (AWD)" };
+        if (m.includes("macan t")) return { engine: "2.0L Turbo 4 cil.", power: "265 cv", acceleration: "6.2s", type: "Combustão", drivetrain: "Integral (AWD)" };
+        if (m.includes("macan")) return { engine: "2.0L Turbo 4 cil.", power: "265 cv", acceleration: "6.4s", type: "Combustão", drivetrain: "Integral (AWD)" };
+        if (m.includes("cayenne s")) return { engine: "4.0L Biturbo V8", power: "474 cv", acceleration: "4.7s", type: "Combustão", drivetrain: "Integral (AWD)" };
+        if (m.includes("cayenne")) return { engine: "3.0L Turbo V6", power: "353 cv", acceleration: "5.7s", type: "Combustão", drivetrain: "Integral (AWD)" };
+        if (m.includes("panamera 4s")) return { engine: "2.9L Biturbo V6", power: "440 cv", acceleration: "4.1s", type: "Combustão", drivetrain: "Integral (AWD)" };
+        if (m.includes("panamera 4")) return { engine: "2.9L Biturbo V6", power: "330 cv", acceleration: "5.3s", type: "Combustão", drivetrain: "Integral (AWD)" };
+        if (m.includes("panamera")) return { engine: "2.9L Biturbo V6", power: "330 cv", acceleration: "5.6s", type: "Combustão", drivetrain: "Traseira (RWD)" };
+        return { engine: "E-Performance / Boxer Twin-Scroll", power: "420 cv", acceleration: "4.2s", type: "Combustão", drivetrain: "Integral (AWD)" };
+      }
+
+      function logisticLabel(status) {
+        return {
+          "Delivered": "Entrega Concluída", "Cancelled": "Cancelado pelo Comprador", "In Transit": "Em Rota (Segurado)",
+          "Shipped": "Postado em Contêiner", "Awaiting Pickup": "Pronto para Retirada",
+          "Pending Approval": "Aguardando Liberação", "Awaiting Delivery": "Aguardando Despacho",
+          "Pending Review": "Em Auditoria", "Awaiting Review": "Aguardando Revisão", "Pending": "Fila de Logística"
+        }[status] || status;
+      }
+
+      function openModal(id) {
+        const sale = sales.find(item => item.saleId === id);
+        if (!sale) return;
+        const specs = getSpecs(sale.model);
+        const typeColor = specs.type === "Elétrico" ? "cyan" : specs.type === "Híbrido Plug-in" ? "emerald" : "red";
+        $("#modalLeft").innerHTML = `
+          <div>
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:26px">
+              <span class="badge">Porsche AG</span>
+              <span class="muted mono" style="font-size:.68rem">Chassis No. #${sale.saleId + 10000}</span>
+            </div>
+            <span class="muted" style="font-size:.75rem;text-transform:uppercase;font-weight:800">Certificado de Venda</span>
+            <h2 id="modalTitle">${sale.model}</h2>
+            <div style="display:flex;gap:7px;flex-wrap:wrap">
+              <span class="family-tag">MY ${sale.modelYear}</span>
+              <span class="family-tag ${typeColor}">${specs.type}</span>
+            </div>
+          </div>
+          <div>
+            <span class="muted" style="font-size:.72rem;text-transform:uppercase;font-weight:800">Preço de Fechamento</span>
+            <div class="emerald mono" style="font-size:clamp(1.8rem,4vw,2.55rem);font-weight:950;margin-top:6px">${currency(sale.price, 2)}</div>
+            <p class="muted" style="display:flex;align-items:center;gap:7px;font-size:.76rem">${icon("landmark")} Transacionado via ${sale.payMethod}</p>
+          </div>
+          <div class="muted mono" style="font-size:.68rem;border-top:1px solid var(--line);padding-top:16px">OFFICIAL FACTORY ARCHIVES<br><span style="display:inline-block;width:96px;border-bottom:1px solid var(--line);margin-top:12px"></span> Dr. Ing. h.c. F. Porsche AG</div>
+        `;
+        $("#modalMain").innerHTML = `
+          <div class="sheet-section">
+            <h3>${icon("cpu")} Especificações Técnicas de Fábrica</h3>
+            <div class="spec-grid">
+              ${spec("Motorização", specs.engine)}
+              ${spec("Potência Máxima", specs.power)}
+              ${spec("Aceleração 0-100 km/h", specs.acceleration, "red")}
+              ${spec("Transmissão", specs.drivetrain)}
+            </div>
+          </div>
+          <div class="sheet-section">
+            <h3>${icon("file")} Registro da Transação</h3>
+            <div class="record-grid">
+              ${record("Data do Contrato", dateLong(sale.saleDate))}
+              ${record("Quilometragem de Entrega", sale.mileage === 0 ? "Zero Km (0 km)" : `${number(sale.mileage)} km`)}
+              ${record("Ponto de Venda / Cidade", `${sale.city}, ${sale.state}`)}
+              ${record("Método Logístico", logisticLabel(sale.deliveryStatus))}
+              ${record("Garantia Integrada", "Porsche Approved (24 meses)", "emerald")}
+              ${record("ID da Transação", `#PS-${sale.saleId + 24000}`, "muted mono")}
+            </div>
+          </div>
+          <div class="sheet-actions">
+            <button class="btn primary" id="exportReceipt">${icon("download")}Gerar Recibo Porsche</button>
+            <button class="btn" id="printSheet">${icon("print")}Imprimir Ficha</button>
+            <span class="success-msg" id="successMsg">Recibo PDF gerado com sucesso!</span>
+          </div>
+        `;
+        $("#exportReceipt").addEventListener("click", () => {
+          $("#exportReceipt").textContent = "Gerando Certificado...";
+          setTimeout(() => {
+            $("#exportReceipt").innerHTML = `${icon("download")}Gerar Recibo Porsche`;
+            $("#successMsg").classList.add("show");
+          }, 1200);
+        });
+        $("#printSheet").addEventListener("click", () => window.print());
+        $("#vehicleModal").classList.add("open");
+        $("#vehicleModal").setAttribute("aria-hidden", "false");
+        document.body.classList.add("modal-open");
+      }
+
+      function spec(label, value, cls = "") {
+        return `<div class="spec"><span>${label}</span><strong class="${cls}">${value}</strong></div>`;
+      }
+
+      function record(label, value, cls = "") {
+        return `<div class="record"><span>${label}</span><strong class="${cls}">${value}</strong></div>`;
+      }
+
+      function closeModal() {
+        $("#vehicleModal").classList.remove("open");
+        $("#vehicleModal").setAttribute("aria-hidden", "true");
+        document.body.classList.remove("modal-open");
+      }
+
+      init();
+    </script>
+  </body>
+</html>
