@@ -124,7 +124,7 @@ Offline: download `index.html` and double-click it — works with no server, no 
 
 ## Autor
 
-**Kelvin Oliveira** — [GitHub](https://github.com/KelvinOliveiraCode) · [LinkedIn](https://www.linkedin.com/in/kelvin-oliveira-0282033b4/)
+**Kelvin Oliveira** — [GitHub](https://github.com/KelvinOliveiraCode) · [LinkedIn](https://www.linkedin.com/in/kelvin-oliveira-code/)
 
 ## Licença
 
