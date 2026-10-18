@@ -14,7 +14,7 @@
 
 ## O que é
 
-Dashboard de vendas Porsche em HTML/CSS/JS puro, zero dependências | Porsche sales dashboard in vanilla JS
+Dashboard de vendas Porsche em HTML/CSS/JS puro, zero dependências
 
 ---
 
