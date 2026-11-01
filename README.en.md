@@ -1,127 +1,118 @@
 # dashboard-vendas-porsche-dio
 
-<div align="center">
-
 **English** · [Português (Brasil)](README.md)
 
-</div>
-
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![React 18](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/) [![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/) [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-06B6D4?style=flat-square&logo=tailwindcss)](https://tailwindcss.com/) [![MIT License](https://img.shields.io/badge/License-MIT-f4c430?style=flat-square)](LICENSE)
-
-### Porsche sales dashboard in vanilla JS
-
----
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript&logoColor=white)](#)
+[![React 18](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=black)](#)
+[![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=flat-square&logo=vite)](#)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-06B6D4?style=flat-square&logo=tailwindcss)](#)
+[![Recharts](https://img.shields.io/badge/Recharts-2-FF6C37?style=flat-square)](#)
+[![MIT License](https://img.shields.io/badge/License-MIT-f4c430?style=flat-square)](LICENSE)
 
 ## What it is
 
-Porsche sales dashboard in vanilla JS
+**Porsche sales dashboard** with mock data, interactive charts (Recharts), KPI cards, filters, and a detail modal. Includes a rule-based AI analysis (offline, deterministic). Bootcamp DIO project.
 
----
+## Status
 
-## Quick Start
+Working. Clean build (vite build). No automated tests.
 
-```bash
-# Clone and enter
-git clone https://github.com/KelvinOliveiraCode/<repo>.git
-cd <repo>
+## Features
 
-# Install dependencies
-npm install
+- **KPIs**: total revenue, average ticket, top-selling models, revenue by period.
+- **Charts**: sales by month, model distribution, state heatmap.
+- **Filters**: by period, model, state, payment method, delivery status.
+- **Sales table**: sortable and searchable listing.
+- **Detail modal**: full sale record view.
+- **AI analysis**: rule-generated insights (`getAIResponse`) — trends, anomalies, invalid data flags.
 
-# Development server
-npm run dev
+## Architecture
 
-# Production build
-npm run build
+React SPA with components in `src/components/` and mock data in `src/data/`. State management uses `useState` + `useMemo` (no Context API). Mock data as inline TypeScript constants.
 
-# Run tests
-npm test
+```mermaid
+flowchart LR
+    DATA[porscheSalesData.ts] --> FILTER[Filters.tsx]
+    DATA --> KPI[KPIs.tsx]
+    DATA --> CHART[Charts.tsx]
+    DATA --> TABLE[SalesTable.tsx]
+    TABLE --> MODAL[VehicleDetailModal.tsx]
+    FILTER --> KPI & CHART & TABLE
 ```
 
-## How it works
+## Stack
 
-Arquitetura de componente em arquivo único (`App.tsx`): toda a UI, estado e lógica vivem em um arquivo para simplicidade de deploy e build zero-config.
+- TypeScript 5.x, React 18, Vite 5
+- Tailwind CSS 3, Recharts 2
+- `lucide-react` (icons), `motion` (animations)
 
-Decisões arquiteturais principais:
-- **Estado global** via `useState` + `useMemo` (evita overhead do Context API)
-- **Agregações memoizadas** para gráficos e insights
-- **Dados mock in-line** como constantes TypeScript para prototipagem sem backend
-- **IA baseada em regras** (`getAIResponse`) ,  determinística, offline, custo zero
+## Repository layout
 
----
+```
+dashboard-vendas-porsche-dio/
+├── index.html
+├── vite.config.ts
+├── src/
+│   ├── main.tsx              # entry point
+│   ├── App.tsx               # main component + global state
+│   ├── data/
+│   │   └── porscheSalesData.ts  # mock data + PorscheSale interface
+│   └── components/
+│       ├── KPIs.tsx           # KPI cards
+│       ├── Charts.tsx         # Recharts charts
+│       ├── Filters.tsx        # period/model/status filters
+│       ├── SalesTable.tsx     # sales data table
+│       └── VehicleDetailModal.tsx  # detail modal
+├── README.md / README.en.md
+└── LICENSE (MIT)
+```
 
-## Capabilities
+## Prerequisites and installation
 
-| Capacidade | Descrição |
-|------------|-------------|
-| Dashboard | 6 cards de métricas (Saldo, Receitas, Despesas, Economia, Investimentos, Patrimônio) |
-| Fluxo de Caixa | Gráfico de barras (7d/30d) com Recharts ,  Receitas, Despesas, Saldo por período |
-| Orçamentos | Orçamentos por categoria com barras de progresso, alertas de estouro |
-| Metas | Anéis de progresso com cálculo de economia mensal e contagem regressiva |
-| Assistente IA | Chat baseado em regras (getAIResponse) ,  análise de gastos, dicas, projeções |
-| Insights | Alertas automáticos: picos de delivery, crescimento patrimonial, breakdown por categoria |
-| Transações | Adicionar/editar receitas/despesas com categorias, tags, seletor de data |
-| Persistência | localStorage ,  estado sobrevive a reload, zero backend |
+Node.js 18+.
 
+```bash
+npm install
+```
 
----
+## How to run
 
+```bash
+npm run dev     # development server (port 3000)
+npm run build   # production build (single inline HTML)
+```
 
+## Tests and quality
 
----
+No automated tests yet.
 
-## FAQ
+Build verified:
 
-<details>
-<summary><strong>What is this project?</strong></summary>
+```bash
+npm run build
+# dist/index.html  89.98 kB | gzip: 20.87 kB
+```
 
-A React/TypeScript study/project demonstrating core concepts.
+## Technical decisions and trade-offs
 
-</details>
+- **Inline mock data**: rapid prototyping without a backend; static data in exchange.
+- **useState + useMemo state**: avoids Context/Redux complexity for this app size.
+- **Rule-based AI**: `getAIResponse()` is offline and deterministic -- no API cost, but limited to predefined patterns.
+- **Single-file build**: Vite `vite:singlefile` plugin produces a single HTML -- simpler deployment.
 
-<details>
-<summary><strong>How do I run it?</strong></summary>
+## Known limitations and roadmap
 
-See [Quick Start](#quick-start) for copy-paste commands.
+- No automated tests.
+- Mock data -- replace with a real API for production.
+- AI analysis is rule-based, not generative.
+- No authentication or persistence.
 
-</details>
+## Development process
 
-<details>
-<summary><strong>Are there tests?</strong></summary>
+An individual project by Kelvin Oliveira for the DIO bootcamp, built with orchestrated AI agents and reviewed by the author. The dashboard and analysis are the author's.
 
-No automated tests in this repository.
+## License and author
 
-</details>
+MIT -- Copyright (c) 2026 Kelvin Rebelo de Oliveira.
 
-<details>
-<summary><strong>Can I use this in production?</strong></summary>
-
-This is a **study/portfolio project**. Review and harden (auth, persistence, monitoring, etc.) before production use.
-
-</details>
-
-
-
----
-
-## Documentation
-
-- **Source Code** ,  Browse the `src/` directory for implementation details
-- **API Reference** ,  TypeScript types in source
-- **Architecture Diagram** ,  See [architecture.mermaid](docs/architecture.mermaid) (if present)
-- **Changelog** ,  [CHANGELOG.md](CHANGELOG.md) (if present)
-- **Contributing** ,  [CONTRIBUTING.md](CONTRIBUTING.md) (if present)
-
-## License
-
-[MIT](LICENSE) ,  Kelvin Oliveira
-
----
-
-<div align="center">
-
-**Built with** · TypeScript + React + Vite + Tailwind
-
-**Author** · [Kelvin Oliveira](https://github.com/KelvinOliveiraCode) · [Portfolio](https://kelvinoliveiracode.github.io/portfolio/)
-
-</div>
+**Author**: [Kelvin Oliveira](https://github.com/KelvinOliveiraCode) · [Portfolio](https://kelvinoliveiracode.github.io/portfolio/)
