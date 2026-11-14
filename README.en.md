@@ -19,12 +19,12 @@ Working. Clean build (vite build). No automated tests.
 
 ## Features
 
-- **KPIs**: total revenue, average ticket, top-selling models, revenue by period.
-- **Charts**: sales by month, model distribution, state heatmap.
-- **Filters**: by period, model, state, payment method, delivery status.
-- **Sales table**: sortable and searchable listing.
-- **Detail modal**: full sale record view.
-- **AI analysis**: rule-generated insights (`getAIResponse`) — trends, anomalies, invalid data flags.
+- KPIs: total revenue, average ticket, top-selling models, revenue by period.
+- Charts: sales by month, model distribution, state heatmap.
+- Filters: by period, model, state, payment method, delivery status.
+- Sales table: sortable and searchable listing.
+- Detail modal: full sale record view.
+- AI analysis: rule-generated insights (`getAIResponse`), trends, anomalies, invalid data flags.
 
 ## Architecture
 
@@ -48,7 +48,7 @@ flowchart LR
 
 ## Repository layout
 
-```
+```text
 dashboard-vendas-porsche-dio/
 ├── index.html
 ├── vite.config.ts
@@ -95,10 +95,10 @@ npm run build
 
 ## Technical decisions and trade-offs
 
-- **Inline mock data**: rapid prototyping without a backend; static data in exchange.
-- **useState + useMemo state**: avoids Context/Redux complexity for this app size.
-- **Rule-based AI**: `getAIResponse()` is offline and deterministic -- no API cost, but limited to predefined patterns.
-- **Single-file build**: Vite `vite:singlefile` plugin produces a single HTML -- simpler deployment.
+- Inline mock data: rapid prototyping without a backend; static data in exchange.
+- useState + useMemo state: avoids Context/Redux complexity for this app size.
+- Rule-based AI: `getAIResponse()` is offline and deterministic -- no API cost, but limited to predefined patterns.
+- Single-file build: Vite `vite:singlefile` plugin produces a single HTML -- simpler deployment.
 
 ## Known limitations and roadmap
 

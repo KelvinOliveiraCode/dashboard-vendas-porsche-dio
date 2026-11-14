@@ -19,12 +19,12 @@ Funcional. Build limpa (vite build). Nenhum teste automatizado.
 
 ## Funcionalidades
 
-- **KPIs**: total vendido, ticket medio, carros mais vendidos, receita por periodo.
-- **Graficos**: vendas por mes, distribuicao por modelo, mapa de calor por estado.
-- **Filtros**: por periodo, modelo, estado, metodo de pagamento, status de entrega.
-- **Tabela de vendas**: listagem com busca e ordenacao.
-- **Modal de detalhes**: visualizacao completa de cada venda.
-- **Analise IA**: insights gerados por regras (`getAIResponse`) — tendencias, anomalias, dados invalidados.
+- KPIs: total vendido, ticket medio, carros mais vendidos, receita por periodo.
+- Graficos: vendas por mes, distribuicao por modelo, mapa de calor por estado.
+- Filtros: por periodo, modelo, estado, metodo de pagamento, status de entrega.
+- Tabela de vendas: listagem com busca e ordenacao.
+- Modal de detalhes: visualizacao completa de cada venda.
+- Analise IA: insights gerados por regras (`getAIResponse`), tendencias, anomalias, dados invalidados.
 
 ## Arquitetura
 
@@ -48,7 +48,7 @@ flowchart LR
 
 ## Estrutura do repositorio
 
-```
+```text
 dashboard-vendas-porsche-dio/
 ├── index.html
 ├── vite.config.ts
@@ -95,15 +95,15 @@ npm run build
 
 ## Decisoes tecnicas e trade-offs
 
-- **Dados mock inline**: prototipagem rapida sem backend; em troca, dados estaticos.
-- **Estado com useState + useMemo**: evita complexidade de Context/Redux para um app deste tamanho.
-- **IA baseada em regras**: `getAIResponse()` e offline e deterministica — sem custo de API, mas limitada a padroes pre-definidos.
-- **Build single-file**: Vite plugin `vite:singlefile` produz um unico HTML — deploy simplificado.
+- Dados mock inline: prototipagem rapida sem backend; em troca, dados estaticos.
+- Estado com useState + useMemo: evita complexidade de Context/Redux para um app deste tamanho.
+- IA baseada em regras: `getAIResponse()` e offline e deterministica, sem custo de API, mas limitada a padroes pre-definidos.
+- Build single-file: Vite plugin `vite:singlefile` produz um unico HTML, deploy simplificado.
 
 ## Limitacoes conhecidas e roadmap
 
 - Sem testes automatizados.
-- Dados mock — substituir por API real para uso em producao.
+- Dados mock, substituir por API real para uso em producao.
 - A analise IA e rule-based, nao generativa.
 - Sem autenticacao ou persistencia.
 
@@ -113,6 +113,6 @@ Projeto individual de Kelvin Oliveira para o bootcamp DIO, construido com agente
 
 ## Licenca e autor
 
-MIT — Copyright (c) 2026 Kelvin Rebelo de Oliveira.
+MIT. Copyright (c) 2026 Kelvin Rebelo de Oliveira.
 
 **Autor**: [Kelvin Oliveira](https://github.com/KelvinOliveiraCode) · [Portfolio](https://kelvinoliveiracode.github.io/portfolio/)
